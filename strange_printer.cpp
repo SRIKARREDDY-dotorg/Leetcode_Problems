@@ -1,3 +1,4 @@
+// Explanation for the solution https://leetcode.com/problems/strange-printer/editorial
 typedef vector<vector<int>> vvi;
 
 class Solution {
