@@ -17,9 +17,12 @@ public:
 
         // worst case take one by one char
         int minTurns = 1 + minimumTurns(start+1, end, s, memo);
-        
+
+        // optimising chars is start and the end(here k) are same then we don't need to print it, we can do it in single pass
+        // "abcda", => aaaaa, bcd => total 4 instead of printing individually.
         for(int k = start+1; k <= end; k ++) {
             if(s[k] == s[start]) {
+                // 
                 minTurns = min(minTurns, minimumTurns(start, k-1, s, memo) + minimumTurns(k+1, end, s, memo));
             }
         }
