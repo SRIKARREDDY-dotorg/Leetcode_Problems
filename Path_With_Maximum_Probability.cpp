@@ -36,3 +36,39 @@ public:
         return maxProb[end_node];
     }
 };
+
+// Using priority queue
+
+class Solution {
+public:
+    double maxProbability(int n, vector<vector<int>>& edges, vector<double>& succProb, int start_node, int end_node) {
+        // undirected weighted graph
+        // gives the maximum probability.
+        vector<pair<int, double>> adjGraph[n];
+
+        for(int i = 0; i < edges.size(); i++) {
+            adjGraph[edges[i][0]].push_back({edges[i][1], succProb[i]});
+            adjGraph[edges[i][1]].push_back({edges[i][0], succProb[i]});
+        }
+
+        vector<double> ans(n, 0.0);
+        priority_queue<pair<double, int>> pq;
+        
+        pq.push({1.0, start_node});
+        while(!pq.empty()) {
+            pair<double, int> pdi  = pq.top();
+            int node = pdi.second;
+            double prob = pdi.first;
+            pq.pop();
+
+            for(auto& edge: adjGraph[node]) {
+                if(edge.second*prob > ans[edge.first]) {
+                    ans[edge.first] = edge.second*prob;
+                    pq.push({ans[edge.first], edge.first});
+                }
+            }
+        }
+
+        return ans[end_node];
+    }
+};
