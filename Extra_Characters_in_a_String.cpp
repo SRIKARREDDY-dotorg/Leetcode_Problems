@@ -1,0 +1,27 @@
+// https://leetcode.com/problems/extra-characters-in-a-string/?envType=daily-question&envId=2024-09-23
+class Solution {
+public:
+    int minExtraChar(string s, vector<string>& dictionary) {
+        int n = s.size();
+        unordered_set<string> dictionarySet(dictionary.begin(), dictionary.end());
+        unordered_map<int, int> memo;
+
+        function<int(int)> dp = [&](int start) {
+            if(start == n) return 0;
+
+            if(memo.count(start)) return memo[start];
+            int ans = dp(start+1)+1;
+
+            for(int end = start; end < n; end++) {
+                auto curr = s.substr(start, end-start+1);
+                if(dictionarySet.count(curr)) {
+                    ans = min(ans, dp(end+1));
+                }
+            }
+
+            return memo[start] = ans;
+        };
+
+        return dp(0);
+    }
+};
