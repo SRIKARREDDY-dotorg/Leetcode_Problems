@@ -139,4 +139,93 @@ class PrintNumbers {
     }
 }
 
+// Printing ABC with three threads
+
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+// Odd–Even Printer
+class Main {
+    public static void main(String[] args) {
+        int n = 10;
+        PrintABC printer = new PrintABC(n);
+        
+        Thread t1 = new Thread(printer::printA, "Thread A");
+        Thread t2 = new Thread(printer::printB, "Thread B");
+        Thread t3 = new Thread(printer::printC, "Thread C");
+        
+        t1.start();
+        t2.start();
+        t3.start();
+    }
+}
+
+class PrintABC {
+    private final int n;
+    private final Lock lock = new ReentrantLock();
+    private final Condition condA = lock.newCondition();
+    private final Condition condB = lock.newCondition();
+    private final Condition condC = lock.newCondition();
+    private int state = 0;
+    
+    public PrintABC(int n) {
+        this.n = n;
+    }
+    
+    public void printA() {
+        for(int i = 0; i < n; i ++) {
+            lock.lock();
+            try {
+                while(state != 0) {
+                    condA.await();
+                }
+                System.out.println("A");
+                state = 1;
+                condB.signal();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+    
+    public void printB() {
+        for(int i = 0; i < n; i ++) {
+            lock.lock();
+            try {
+                while(state != 1) {
+                    condB.await();
+                }
+                System.out.println("B");
+                state = 2;
+                condC.signal();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+    
+    public void printC() {
+        for(int i = 0; i < n; i ++) {
+            lock.lock();
+            try {
+                while(state != 2) {
+                    condC.await();
+                }
+                System.out.println("C");
+                System.out.println("------------------------------");
+                state = 0;
+                condA.signal();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+}
 
