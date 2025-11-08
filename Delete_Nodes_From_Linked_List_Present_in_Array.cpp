@@ -40,3 +40,47 @@ public:
         return head;
     }
 };
+
+// Another way but same
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* deleteNode(ListNode* node) {
+        ListNode* nextNode = node->next;
+        node->next = NULL;
+        // cout<<node->val<<endl;
+        return nextNode;
+    }
+    ListNode* modifiedList(vector<int>& nums, ListNode* head) {
+        unordered_map<int, bool> numsMap;
+        for(int& num: nums) {
+            numsMap[num] = 1;
+        }
+        ListNode* currentNode = head;
+        ListNode* prevNode = NULL;
+        while(currentNode) {
+            if(numsMap[currentNode->val]) {
+                if(head->val == currentNode->val) {
+                    head = currentNode->next;
+                }
+                ListNode* nextNode = deleteNode(currentNode);
+                if(prevNode) prevNode->next = nextNode;
+                currentNode = nextNode;
+            } else {
+                prevNode = currentNode;
+                currentNode = currentNode->next;
+            }
+        }
+        return head;
+    }
+};
